@@ -1,14 +1,11 @@
-package main
+package database
 
 import (
 	"context"
 	"database/sql"
-	_ "embed"
 	"encoding/csv"
 	"fmt"
-	// "gabysoft/internal/config"
-	"gabysoft/internal/database"
-	"gabysoft/internal/queries"
+	"gabysoft/internal/store"
 	"log"
 	"os"
 	"path/filepath"
@@ -31,7 +28,7 @@ func main() {
 		return
 	}
 
-	q := database.New(db)
+	q := store.New(db)
 
 	count, err := q.CountProducts(context.Background())
 	if err != nil {
@@ -81,7 +78,7 @@ func initDB() (*sql.DB, error) {
 		return nil, fmt.Errorf("Failed to ping database: %w", err)
 	}
 
-	if _, err := db.Exec(queries.Schema); err != nil {
+	if _, err := db.Exec(schema); err != nil {
 		return nil, fmt.Errorf("Failed to apply schema: %w", err)
 	}
 
@@ -104,13 +101,13 @@ func readCSV(filename string) ([][]string, error) {
 	return records, nil
 }
 
-func processRecord(row []string, q *database.Queries) error {
+func processRecord(row []string, q *store.Queries) error {
 	price, err := strconv.ParseFloat(row[4], 64)
 	if err != nil {
 		return err
 	}
 
-	err = q.CreateProduct(context.Background(), database.CreateProductParams{
+	err = q.CreateProduct(context.Background(), store.CreateProductParams{
 		Name:        row[0],
 		Code:        handleEmpty(row[1]),
 		Barcode:     handleEmpty(row[2]),
