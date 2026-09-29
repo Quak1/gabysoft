@@ -66,9 +66,9 @@ func processRecord(row []string, q *store.Queries) error {
 
 	err = q.CreateProduct(context.Background(), store.CreateProductParams{
 		Name:        row[0],
-		Code:        handleEmpty(row[1]),
-		Barcode:     handleEmpty(row[2]),
-		Description: handleEmpty(row[3]),
+		Code:        row[1],
+		Barcode:     row[2],
+		Description: row[3],
 		Price:       price,
 	})
 
@@ -77,17 +77,4 @@ func processRecord(row []string, q *store.Queries) error {
 	}
 
 	return nil
-}
-
-func handleEmpty(entry string) sql.NullString {
-	out := sql.NullString{
-		String: entry,
-		Valid:  true,
-	}
-
-	if entry == "" {
-		out.Valid = false
-	}
-
-	return out
 }

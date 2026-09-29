@@ -7,7 +7,6 @@ package store
 
 import (
 	"context"
-	"database/sql"
 )
 
 const countProducts = `-- name: CountProducts :one
@@ -28,9 +27,9 @@ VALUES (?, ?, ?, ?, ?)
 
 type CreateProductParams struct {
 	Name        string
-	Code        sql.NullString
-	Barcode     sql.NullString
-	Description sql.NullString
+	Code        string
+	Barcode     string
+	Description string
 	Price       float64
 }
 
@@ -42,6 +41,16 @@ func (q *Queries) CreateProduct(ctx context.Context, arg CreateProductParams) er
 		arg.Description,
 		arg.Price,
 	)
+	return err
+}
+
+const deleteProduct = `-- name: DeleteProduct :exec
+DELETE FROM products
+WHERE id = ?
+`
+
+func (q *Queries) DeleteProduct(ctx context.Context, id int64) error {
+	_, err := q.db.ExecContext(ctx, deleteProduct, id)
 	return err
 }
 
@@ -77,4 +86,31 @@ func (q *Queries) GetProducts(ctx context.Context) ([]Product, error) {
 		return nil, err
 	}
 	return items, nil
+}
+
+const updateProduct = `-- name: UpdateProduct :exec
+UPDATE products
+SET name = ?, code = ?, barcode = ?, description = ?, price = ?
+WHERE id = ?
+`
+
+type UpdateProductParams struct {
+	Name        string
+	Code        string
+	Barcode     string
+	Description string
+	Price       float64
+	ID          int64
+}
+
+func (q *Queries) UpdateProduct(ctx context.Context, arg UpdateProductParams) error {
+	_, err := q.db.ExecContext(ctx, updateProduct,
+		arg.Name,
+		arg.Code,
+		arg.Barcode,
+		arg.Description,
+		arg.Price,
+		arg.ID,
+	)
+	return err
 }

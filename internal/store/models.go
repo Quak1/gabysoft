@@ -4,15 +4,11 @@
 
 package store
 
-import (
-	"database/sql"
-)
-
 type Product struct {
 	ID          int64
 	Name        string
-	Code        sql.NullString
-	Barcode     sql.NullString
-	Description sql.NullString
+	Code        string
+	Barcode     string
+	Description string
 	Price       float64
 }

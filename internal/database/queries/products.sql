@@ -7,3 +7,12 @@ VALUES (?, ?, ?, ?, ?);
 
 -- name: GetProducts :many
 SELECT * FROM products;
+
+-- name: UpdateProduct :exec
+UPDATE products
+SET name = ?, code = ?, barcode = ?, description = ?, price = ?
+WHERE id = ?;
+
+-- name: DeleteProduct :exec
+DELETE FROM products
+WHERE id = ?;

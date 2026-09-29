@@ -1,8 +1,8 @@
 CREATE TABLE IF NOT EXISTS products (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT NOT NULL,
-  code TEXT,
-  barcode TEXT,
-  description TEXT,
+  code TEXT NOT NULL,
+  barcode TEXT NOT NULL,
+  description TEXT NOT NULL,
   price NUMERIC NOT NULL
 );

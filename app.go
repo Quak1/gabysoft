@@ -54,5 +54,46 @@ func (a *App) Greet(name string) string {
 }
 
 func (a *App) GetAllProducts() ([]store.Product, error) {
-	return a.query.GetProducts(context.Background())
+	return a.query.GetProducts(a.ctx)
+}
+
+func (a *App) UpdateProduct(p store.UpdateProductParams) error {
+	return a.query.UpdateProduct(a.ctx, p)
+}
+
+func (a *App) DeleteProduct(id int64) error {
+	return a.query.DeleteProduct(a.ctx, id)
+}
+
+func (a *App) ShowMessage(title, message string) {
+	_, err := runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{
+		Type:    runtime.InfoDialog,
+		Title:   title,
+		Message: message,
+	})
+
+	if err != nil {
+		log.Println(err)
+	}
+}
+
+func (a *App) ShowConfirm(title, message string) bool {
+	result, err := runtime.MessageDialog(a.ctx, runtime.MessageDialogOptions{
+		Type:          runtime.QuestionDialog,
+		Title:         title,
+		Message:       message,
+		Buttons:       []string{"Yes", "No"},
+		DefaultButton: "No",
+		CancelButton:  "No",
+	})
+	if err != nil {
+		log.Println(err)
+		return false
+	}
+
+	if result == "Yes" {
+		return true
+	}
+
+	return false
 }
