@@ -5,7 +5,7 @@ import { store } from "../../wailsjs/go/models"
 import UpdateModal from './products/UpdateModal.vue'
 
 const products = ref<Array<store.Product>>([])
-const isUpdateModalOpen = ref(false)
+const isModalOpen = ref(false)
 const currentItem = ref<store.Product>()
 
 onMounted(async () => {
@@ -61,7 +61,12 @@ const sorted = computed(() => {
 
 const openUpdateModal = (item: store.Product) => {
   currentItem.value = item
-  isUpdateModalOpen.value = true
+  isModalOpen.value = true
+}
+
+const openCreateModal = () => {
+  currentItem.value = undefined
+  isModalOpen.value = true
 }
 
 const handleSave = async () => {
@@ -71,9 +76,13 @@ const handleSave = async () => {
 </script>
 
 <template>
-  <input type="text" name="search" id="search" v-model.trim="search">
-  <UpdateModal v-if="isUpdateModalOpen" :product="currentItem" @close="isUpdateModalOpen = false" @save="handleSave" />
-  <p>{{ isUpdateModalOpen }}</p>
+  <label>
+    Search product:
+    <input type="text" name="search" id="search" v-model.trim="search">
+  </label>
+  <UpdateModal v-if="isModalOpen" :product="currentItem" @close="isModalOpen = false" @save="handleSave" />
+  <p>{{ isModalOpen }}</p>
+  <button @click="openCreateModal">Create New Product</button>
   <table>
     <thead>
       <tr>

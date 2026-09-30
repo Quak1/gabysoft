@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, } from 'vue';
 import { store } from '../../../wailsjs/go/models';
-import { UpdateProduct, ShowMessage, ShowConfirm, DeleteProduct } from "../../../wailsjs/go/main/App"
+import { UpdateProduct, ShowMessage, ShowConfirm, DeleteProduct, CreateProduct } from "../../../wailsjs/go/main/App"
 import Modal from '../Modal.vue';
 
 const props = defineProps<{
@@ -18,22 +18,21 @@ const formState = ref<store.CreateProductParams>({
   Price: props.product?.Price || 0,
 })
 const productID = computed(() => props.product?.ID)
+const isEditing = computed(() => !!props.product)
 
 const onSubmit = async () => {
-  if (productID.value === undefined) {
-    await ShowMessage("Update failed", `Failed to update item "${formState.value.Name}". Please try again later.`)
-    emit("close")
-    return
+  if (isEditing.value) {
+    if (productID.value === undefined) {
+      await ShowMessage("Update failed", `Failed to update item "${formState.value.Name}". Please try again later.`)
+      emit("close")
+      return
+    }
+    await UpdateProduct(formState.value, productID.value)
+    await ShowMessage("Update complete", `Item ${formState.value.Name} has been updated.`)
+  } else {
+    await CreateProduct(formState.value)
+    await ShowMessage("Product created", `Product ${formState.value.Name} has been created.`)
   }
-
-  await UpdateProduct({
-    Name: formState.value.Name || "",
-    Code: formState.value.Code || "",
-    Barcode: formState.value.Barcode || "",
-    Description: formState.value.Description || "",
-    Price: formState.value.Price || 0,
-  }, productID.value)
-  await ShowMessage("Update complete", `Item ${formState.value.Name} has been updated.`)
 
   emit("save")
   emit("close")
@@ -58,29 +57,35 @@ const onDelete = async () => {
 
 <template>
   <Modal closeBtnText="Cancel" @close="$emit('close')">
+    <h2>{{ isEditing ? "Edit product" : "Create product" }}</h2>
     <form @submit.prevent="onSubmit">
       <div>
-        <label for="name">Name</label>
-        <input type="text" v-model="formState.Name" />
+        <label>
+          Name <input type="text" v-model="formState.Name" />
+        </label>
       </div>
       <div>
-        <label for="code">Code</label>
-        <input type="text" v-model="formState.Code">
+        <label>
+          Code <input type="text" v-model="formState.Code">
+        </label>
       </div>
       <div>
-        <label for="barcode">Barcode</label>
-        <input type="text" v-model="formState.Barcode">
+        <label>
+          Barcode <input type="text" v-model="formState.Barcode">
+        </label>
       </div>
       <div>
-        <label for="category">Category</label>
-        <input type="text" v-model="formState.Description">
+        <label>
+          Category <input type="text" v-model="formState.Description">
+        </label>
       </div>
       <div>
-        <label for="price">Price</label>
-        <input type="number" step="any" v-model="formState.Price">
+        <label>
+          Price <input type="number" step="any" v-model="formState.Price">
+        </label>
       </div>
       <button type="submit">Save</button>
     </form>
-    <button @click="onDelete">Delete</button>
+    <button v-if="isEditing" @click="onDelete">Delete</button>
   </Modal>
 </template>
