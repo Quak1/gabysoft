@@ -57,8 +57,25 @@ func (a *App) GetAllProducts() ([]store.Product, error) {
 	return a.query.GetProducts(a.ctx)
 }
 
-func (a *App) UpdateProduct(p store.UpdateProductParams) error {
-	return a.query.UpdateProduct(a.ctx, p)
+func (a *App) CreateProduct(p store.CreateProductParams) error {
+	return a.query.CreateProduct(a.ctx, store.CreateProductParams{
+		Name:        p.Name,
+		Code:        p.Code,
+		Barcode:     p.Barcode,
+		Description: p.Description,
+		Price:       p.Price,
+	})
+}
+
+func (a *App) UpdateProduct(p store.CreateProductParams, id int64) error {
+	return a.query.UpdateProduct(a.ctx, store.UpdateProductParams{
+		Name:        p.Name,
+		Code:        p.Code,
+		Barcode:     p.Barcode,
+		Description: p.Description,
+		Price:       p.Price,
+		ID:          id,
+	})
 }
 
 func (a *App) DeleteProduct(id int64) error {

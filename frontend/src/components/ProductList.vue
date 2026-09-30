@@ -59,16 +59,12 @@ const sorted = computed(() => {
   })
 })
 
-const closeUpdateModal = () => {
-  isUpdateModalOpen.value = false
-}
-
 const openUpdateModal = (item: store.Product) => {
-  isUpdateModalOpen.value = true
   currentItem.value = item
+  isUpdateModalOpen.value = true
 }
 
-const handleUpdated = async () => {
+const handleSave = async () => {
   products.value = await GetAllProducts()
 }
 
@@ -76,7 +72,7 @@ const handleUpdated = async () => {
 
 <template>
   <input type="text" name="search" id="search" v-model.trim="search">
-  <UpdateModal :isOpen="isUpdateModalOpen" :product="currentItem" @close="closeUpdateModal" @updated="handleUpdated" />
+  <UpdateModal v-if="isUpdateModalOpen" :product="currentItem" @close="isUpdateModalOpen = false" @save="handleSave" />
   <p>{{ isUpdateModalOpen }}</p>
   <table>
     <thead>
@@ -104,7 +100,7 @@ const handleUpdated = async () => {
         <td>{{ item.Barcode }}</td>
         <td>{{ item.Description }}</td>
         <td>{{ item.Price }}</td>
-        <td><button @click="() => openUpdateModal(item)">Edit</button></td>
+        <td><button @click="openUpdateModal(item)">Edit</button></td>
       </tr>
     </tbody>
   </table>

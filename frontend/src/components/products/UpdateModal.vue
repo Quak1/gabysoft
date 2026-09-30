@@ -1,46 +1,46 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { computed, ref, } from 'vue';
 import { store } from '../../../wailsjs/go/models';
 import { UpdateProduct, ShowMessage, ShowConfirm, DeleteProduct } from "../../../wailsjs/go/main/App"
 import Modal from '../Modal.vue';
 
 const props = defineProps<{
-  isOpen: boolean
   product?: store.Product
 }>();
 
-const emit = defineEmits(["close", "updated"])
+const emit = defineEmits(["close", "save"])
 
-const formState = ref({ ...props.product })
-
-watch(
-  () => props.product,
-  (newValues) => formState.value = { ...newValues }
-)
+const formState = ref<store.CreateProductParams>({
+  Name: props.product?.Name || "",
+  Code: props.product?.Code || "",
+  Barcode: props.product?.Barcode || "",
+  Description: props.product?.Description || "",
+  Price: props.product?.Price || 0,
+})
+const productID = computed(() => props.product?.ID)
 
 const onSubmit = async () => {
-  if (formState.value.ID === undefined) {
+  if (productID.value === undefined) {
     await ShowMessage("Update failed", `Failed to update item "${formState.value.Name}". Please try again later.`)
     emit("close")
     return
   }
 
   await UpdateProduct({
-    ID: formState.value.ID,
     Name: formState.value.Name || "",
     Code: formState.value.Code || "",
     Barcode: formState.value.Barcode || "",
     Description: formState.value.Description || "",
     Price: formState.value.Price || 0,
-  })
+  }, productID.value)
   await ShowMessage("Update complete", `Item ${formState.value.Name} has been updated.`)
 
-  emit("updated")
+  emit("save")
   emit("close")
 }
 
 const onDelete = async () => {
-  if (formState.value.ID === undefined) {
+  if (productID.value === undefined) {
     await ShowMessage("Delete failed", `Failed to delete item. Please try again later.`)
     emit("close")
     return
@@ -48,17 +48,16 @@ const onDelete = async () => {
 
   const confirm = await ShowConfirm("Delete", "Do you want to delete this item?")
   if (confirm) {
-    await DeleteProduct(formState.value.ID)
-    emit("updated")
+    await DeleteProduct(productID.value)
+    emit("save")
   }
 
   emit("close")
 }
-
 </script>
 
 <template>
-  <Modal :isOpen="isOpen" closeBtnText="Cancel" @close="$emit('close')">
+  <Modal closeBtnText="Cancel" @close="$emit('close')">
     <form @submit.prevent="onSubmit">
       <div>
         <label for="name">Name</label>

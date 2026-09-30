@@ -1,32 +1,22 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { onMounted, ref } from 'vue';
 
 const props = defineProps<{
-  isOpen: boolean
   closeBtnText: string
 }>();
 
 const emit = defineEmits(['close']);
 
 const dialogRef = ref();
-
-watch(() => props.isOpen, (isOpen) => {
-  if (!dialogRef.value) return;
-
-  if (isOpen) {
-    dialogRef.value.showModal();
-  } else {
-    dialogRef.value.close();
-  }
-});
-
-const handleClose = () => { emit('close') };
+onMounted(() => {
+  dialogRef.value?.showModal()
+})
 </script>
 
 <template>
-  <dialog ref="dialogRef" @close="handleClose">
+  <dialog id="modal" ref="dialogRef" @close="$emit('close')">
     <slot />
-    <button @click="handleClose">{{ closeBtnText }}</button>
+    <button commandfor="modal" command="close">{{ closeBtnText }}</button>
   </dialog>
 </template>
 
