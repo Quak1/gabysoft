@@ -4,6 +4,34 @@
 
 package store
 
+import (
+	"time"
+)
+
+type Address struct {
+	ID          int64
+	City        string
+	State       string
+	Country     string
+	PostalCode  string
+	Street      string
+	StreeNumber string
+	PhoneNumber string
+	TaxID       string
+	Email       string
+}
+
+type Client struct {
+	ID   int64
+	Name string
+}
+
+type Folio struct {
+	ID    int64
+	Type  string
+	Count int64
+}
+
 type Product struct {
 	ID          int64
 	Name        string
@@ -11,4 +39,19 @@ type Product struct {
 	Barcode     string
 	Description string
 	Price       float64
+}
+
+type Transaction struct {
+	ID        int64
+	Date      time.Time
+	Folio     int64
+	ClientID  int64
+	AddressID int64
+	FolioType int64
+}
+
+type TransactionItem struct {
+	Quantity      float64
+	ProductID     int64
+	TransactionID int64
 }
