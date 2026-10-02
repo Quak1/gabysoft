@@ -3,6 +3,7 @@ import { computed, onMounted, ref } from 'vue'
 import { GetAllProducts } from "../../wailsjs/go/main/App"
 import { store } from "../../wailsjs/go/models"
 import UpdateModal from './products/UpdateModal.vue'
+import { useCart } from '../composables/useCart'
 
 const products = ref<Array<store.Product>>([])
 const isModalOpen = ref(false)
@@ -73,6 +74,7 @@ const handleSave = async () => {
   products.value = await GetAllProducts()
 }
 
+const { addToCart } = useCart()
 </script>
 
 <template>
@@ -110,6 +112,7 @@ const handleSave = async () => {
         <td>{{ item.Description }}</td>
         <td>{{ item.Price }}</td>
         <td><button @click="openUpdateModal(item)">Edit</button></td>
+        <td><button @click="addToCart(item)">Cart</button></td>
       </tr>
     </tbody>
   </table>
