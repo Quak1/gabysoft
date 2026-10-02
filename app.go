@@ -3,9 +3,9 @@ package main
 import (
 	"context"
 	"database/sql"
-	"fmt"
 	"gabysoft/internal/database"
 	"gabysoft/internal/store"
+	"gabysoft/internal/tasks"
 	"log"
 
 	"github.com/wailsapp/wails/v2/pkg/runtime"
@@ -15,12 +15,14 @@ import (
 type App struct {
 	ctx   context.Context
 	db    *sql.DB
-	query *store.Queries
+	tasks *tasks.Tasks
 }
 
 // NewApp creates a new App application struct
 func NewApp() *App {
-	return &App{}
+	return &App{
+		tasks: tasks.NewTasks(),
+	}
 }
 
 // startup is called when the app starts. The context is saved
@@ -41,45 +43,11 @@ func (a *App) startup(ctx context.Context) {
 	a.db = db
 
 	q := store.New(db)
-	a.query = q
+	a.tasks.Inject(ctx, q)
 }
 
 func (a *App) shutdown(ctx context.Context) {
 	a.db.Close()
-}
-
-// Greet returns a greeting for the given name
-func (a *App) Greet(name string) string {
-	return fmt.Sprintf("Hello %s, It's show time!", name)
-}
-
-func (a *App) GetAllProducts() ([]store.Product, error) {
-	return a.query.GetProducts(a.ctx)
-}
-
-func (a *App) CreateProduct(p store.CreateProductParams) error {
-	return a.query.CreateProduct(a.ctx, store.CreateProductParams{
-		Name:        p.Name,
-		Code:        p.Code,
-		Barcode:     p.Barcode,
-		Description: p.Description,
-		Price:       p.Price,
-	})
-}
-
-func (a *App) UpdateProduct(p store.CreateProductParams, id int64) error {
-	return a.query.UpdateProduct(a.ctx, store.UpdateProductParams{
-		Name:        p.Name,
-		Code:        p.Code,
-		Barcode:     p.Barcode,
-		Description: p.Description,
-		Price:       p.Price,
-		ID:          id,
-	})
-}
-
-func (a *App) DeleteProduct(id int64) error {
-	return a.query.DeleteProduct(a.ctx, id)
 }
 
 func (a *App) ShowMessage(title, message string) {

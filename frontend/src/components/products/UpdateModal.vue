@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed, ref, } from 'vue';
 import { store } from '../../../wailsjs/go/models';
-import { UpdateProduct, ShowMessage, ShowConfirm, DeleteProduct, CreateProduct } from "../../../wailsjs/go/main/App"
+import * as Product from "../../../wailsjs/go/tasks/Product"
+import * as App from '../../../wailsjs/go/main/App'
 import Modal from '../Modal.vue';
 
 const props = defineProps<{
@@ -23,15 +24,15 @@ const isEditing = computed(() => !!props.product)
 const onSubmit = async () => {
   if (isEditing.value) {
     if (productID.value === undefined) {
-      await ShowMessage("Update failed", `Failed to update item "${formState.value.Name}". Please try again later.`)
+      await App.ShowMessage("Update failed", `Failed to update item "${formState.value.Name}". Please try again later.`)
       emit("close")
       return
     }
-    await UpdateProduct(formState.value, productID.value)
-    await ShowMessage("Update complete", `Item ${formState.value.Name} has been updated.`)
+    await Product.Update(formState.value, productID.value)
+    await App.ShowMessage("Update complete", `Item ${formState.value.Name} has been updated.`)
   } else {
-    await CreateProduct(formState.value)
-    await ShowMessage("Product created", `Product ${formState.value.Name} has been created.`)
+    await Product.Create(formState.value)
+    await App.ShowMessage("Product created", `Product ${formState.value.Name} has been created.`)
   }
 
   emit("save")
@@ -40,14 +41,14 @@ const onSubmit = async () => {
 
 const onDelete = async () => {
   if (productID.value === undefined) {
-    await ShowMessage("Delete failed", `Failed to delete item. Please try again later.`)
+    await App.ShowMessage("Delete failed", `Failed to delete item. Please try again later.`)
     emit("close")
     return
   }
 
-  const confirm = await ShowConfirm("Delete", "Do you want to delete this item?")
+  const confirm = await App.ShowConfirm("Delete", "Do you want to delete this item?")
   if (confirm) {
-    await DeleteProduct(productID.value)
+    await Product.Delete(productID.value)
     emit("save")
   }
 

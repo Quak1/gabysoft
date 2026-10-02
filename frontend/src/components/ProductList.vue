@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref } from 'vue'
-import { GetAllProducts } from "../../wailsjs/go/main/App"
+import * as Product from "../../wailsjs/go/tasks/Product"
 import { store } from "../../wailsjs/go/models"
 import UpdateModal from './products/UpdateModal.vue'
 import { useCart } from '../composables/useCart'
@@ -10,7 +10,7 @@ const isModalOpen = ref(false)
 const currentItem = ref<store.Product>()
 
 onMounted(async () => {
-  products.value = await GetAllProducts()
+  products.value = await Product.GetAll()
 })
 
 const categoryFilter = ref("")
@@ -71,7 +71,7 @@ const openCreateModal = () => {
 }
 
 const handleSave = async () => {
-  products.value = await GetAllProducts()
+  products.value = await Product.GetAll()
 }
 
 const { cartItems, addToCart, removeFromCart } = useCart()
