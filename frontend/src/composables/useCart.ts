@@ -8,29 +8,31 @@ interface CartEntry {
   costTax: number
 }
 
-const cartItems = ref<CartEntry[]>([])
+const cartItems = ref<Map<number, CartEntry>>(new Map())
 const TAX = 0.16
 
+const getCosts = (price: number, quantity: number) => {
+  return [price * quantity, price * quantity * (1 + TAX)]
+
+}
 const updateCosts = (entry: CartEntry) => {
-  entry.cost = entry.item.Price * entry.quantity
-  entry.costTax = entry.cost + entry.cost * TAX
+  [entry.cost, entry.costTax] = getCosts(entry.item.Price, entry.quantity)
 }
 
 export function useCart() {
   const addToCart = (item: store.Product) => {
-    let entry = cartItems.value.find((e) => e.item.ID === item.ID)
+    let entry = cartItems.value.get(item.ID)
     if (entry) {
       entry.quantity++
+      updateCosts(entry)
     } else {
-      const i = cartItems.value.push({ item, quantity: 1, cost: 0, costTax: 0 })
-      entry = cartItems.value[i - 1]
+      const [cost, costTax] = getCosts(item.Price, 1)
+      cartItems.value.set(item.ID, { item, quantity: 1, cost, costTax })
     }
-
-    updateCosts(entry)
   }
 
   const removeFromCart = (itemId: number) => {
-    cartItems.value = cartItems.value.filter((e) => e.item.ID !== itemId)
+    cartItems.value.delete(itemId)
   }
 
   const updateQuantity = (itemId: number, newQuantity: number) => {
@@ -39,7 +41,7 @@ export function useCart() {
       return
     }
 
-    const entry = cartItems.value.find(e => e.item.ID === itemId)
+    const entry = cartItems.value.get(itemId)
     if (entry) {
       entry.quantity = newQuantity
       updateCosts(entry)

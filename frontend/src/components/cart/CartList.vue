@@ -28,7 +28,7 @@ const handleQuantityChange = (itemId: number, event: Event) => {
       </tr>
     </thead>
     <tbody>
-      <tr v-for="{ item, quantity, cost, costTax } in cartItems" :key="item.ID">
+      <tr v-for="{ item, quantity, cost, costTax } in cartItems.values()" :key="item.ID">
         <td>{{ item.Name }}</td>
         <td>{{ item.Code }}</td>
         <td>{{ item.Barcode }}</td>

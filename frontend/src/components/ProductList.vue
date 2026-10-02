@@ -74,7 +74,12 @@ const handleSave = async () => {
   products.value = await GetAllProducts()
 }
 
-const { addToCart } = useCart()
+const { cartItems, addToCart, removeFromCart } = useCart()
+
+const inCart = computed(() => sorted.value.map(item => ({
+  item,
+  isInCart: cartItems.value.has(item.ID)
+})))
 </script>
 
 <template>
@@ -105,14 +110,17 @@ const { addToCart } = useCart()
       </tr>
     </thead>
     <tbody>
-      <tr v-for="item in sorted" :key="item.ID">
+      <tr v-for="{ item, isInCart } in inCart" :key="item.ID">
         <td>{{ item.Name }}</td>
         <td>{{ item.Code }}</td>
         <td>{{ item.Barcode }}</td>
         <td>{{ item.Description }}</td>
         <td>{{ item.Price }}</td>
         <td><button @click="openUpdateModal(item)">Edit</button></td>
-        <td><button @click="addToCart(item)">Cart</button></td>
+        <td>
+          <button v-if="!isInCart" @click="addToCart(item)">Add to Cart</button>
+          <button v-else @click="removeFromCart(item.ID)">Remove from Cart</button>
+        </td>
       </tr>
     </tbody>
   </table>
