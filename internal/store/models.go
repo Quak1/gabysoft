@@ -27,7 +27,6 @@ type Client struct {
 }
 
 type Folio struct {
-	ID    int64
 	Type  string
 	Count int64
 }
@@ -47,7 +46,7 @@ type Transaction struct {
 	Folio     int64
 	ClientID  int64
 	AddressID int64
-	FolioType int64
+	FolioType string
 }
 
 type TransactionItem struct {

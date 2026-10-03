@@ -17,3 +17,7 @@ SELECT * FROM transactions t
 JOIN transaction_items ti ON t.id = ti.transactions_id
 JOIN products p ON ti.product_id = p.id
 WHERE t.id = ?;
+
+-- name: AddTransactionItem :exec
+INSERT INTO transaction_items (quantity, product_id, transaction_id) 
+VALUES (?, ?, ?);

@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS transactions (
   folio INTEGER NOT NULL,
   client_id INTEGER NOT NULL,
   address_id INTEGER NOT NULL,
-  folio_type INTEGER NOT NULL,
+  folio_type TEXT NOT NULL,
   FOREIGN KEY (client_id) REFERENCES clients(id),
   FOREIGN KEY (address_id) REFERENCES addresses(id),
   FOREIGN KEY (folio_type) REFERENCES folios(type) 
@@ -47,7 +47,6 @@ CREATE TABLE IF NOT EXISTS transaction_items (
 );
 
 CREATE TABLE IF NOT EXISTS folios (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  type TEXT NOT NULL UNIQUE,
+  type TEXT PRIMARY KEY,
   count INTEGER NOT NULL
 );

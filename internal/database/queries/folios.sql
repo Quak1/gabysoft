@@ -5,8 +5,8 @@ VALUES (?, 1);
 -- name: GetFolios :many
 SELECT * FROM folios;
 
--- name: IncrementCount :exec
+-- name: IncrementFolioCount :exec
 UPDATE folios
 SET count = count + 1
-WHERE id = ?;
+WHERE type = ?;
 

@@ -10,6 +10,22 @@ import (
 	"time"
 )
 
+const addTransactionItem = `-- name: AddTransactionItem :exec
+INSERT INTO transaction_items (quantity, product_id, transaction_id) 
+VALUES (?, ?, ?)
+`
+
+type AddTransactionItemParams struct {
+	Quantity      float64
+	ProductID     int64
+	TransactionID int64
+}
+
+func (q *Queries) AddTransactionItem(ctx context.Context, arg AddTransactionItemParams) error {
+	_, err := q.db.ExecContext(ctx, addTransactionItem, arg.Quantity, arg.ProductID, arg.TransactionID)
+	return err
+}
+
 const createTransaction = `-- name: CreateTransaction :exec
 INSERT INTO transactions (date, client_id, address_id, folio, folio_type) 
 VALUES (?, ?, ?, ?, ?)
@@ -20,7 +36,7 @@ type CreateTransactionParams struct {
 	ClientID  int64
 	AddressID int64
 	Folio     int64
-	FolioType int64
+	FolioType string
 }
 
 func (q *Queries) CreateTransaction(ctx context.Context, arg CreateTransactionParams) error {
@@ -35,7 +51,7 @@ func (q *Queries) CreateTransaction(ctx context.Context, arg CreateTransactionPa
 }
 
 const getTransactionInfo = `-- name: GetTransactionInfo :one
-SELECT t.id, date, folio, client_id, address_id, folio_type, c.id, name, a.id, city, state, country, postal_code, street, stree_number, phone_number, tax_id, email, f.id, type, count FROM transactions t
+SELECT t.id, date, folio, client_id, address_id, folio_type, c.id, name, a.id, city, state, country, postal_code, street, stree_number, phone_number, tax_id, email, type, count FROM transactions t
 JOIN clients c ON t.client_id = c.id
 JOIN addresses a ON t.address_id = a.id
 JOIN folios f ON t.folio_type = folios.type
@@ -48,7 +64,7 @@ type GetTransactionInfoRow struct {
 	Folio       int64
 	ClientID    int64
 	AddressID   int64
-	FolioType   int64
+	FolioType   string
 	ID_2        int64
 	Name        string
 	ID_3        int64
@@ -61,7 +77,6 @@ type GetTransactionInfoRow struct {
 	PhoneNumber string
 	TaxID       string
 	Email       string
-	ID_4        int64
 	Type        string
 	Count       int64
 }
@@ -88,7 +103,6 @@ func (q *Queries) GetTransactionInfo(ctx context.Context, id int64) (GetTransact
 		&i.PhoneNumber,
 		&i.TaxID,
 		&i.Email,
-		&i.ID_4,
 		&i.Type,
 		&i.Count,
 	)
@@ -108,7 +122,7 @@ type GetTransactionItemsRow struct {
 	Folio         int64
 	ClientID      int64
 	AddressID     int64
-	FolioType     int64
+	FolioType     string
 	Quantity      float64
 	ProductID     int64
 	TransactionID int64

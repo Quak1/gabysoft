@@ -20,7 +20,7 @@ func (q *Queries) CreateFolio(ctx context.Context, type_ string) error {
 }
 
 const getFolios = `-- name: GetFolios :many
-SELECT id, type, count FROM folios
+SELECT type, count FROM folios
 `
 
 func (q *Queries) GetFolios(ctx context.Context) ([]Folio, error) {
@@ -32,7 +32,7 @@ func (q *Queries) GetFolios(ctx context.Context) ([]Folio, error) {
 	var items []Folio
 	for rows.Next() {
 		var i Folio
-		if err := rows.Scan(&i.ID, &i.Type, &i.Count); err != nil {
+		if err := rows.Scan(&i.Type, &i.Count); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -46,13 +46,13 @@ func (q *Queries) GetFolios(ctx context.Context) ([]Folio, error) {
 	return items, nil
 }
 
-const incrementCount = `-- name: IncrementCount :exec
+const incrementFolioCount = `-- name: IncrementFolioCount :exec
 UPDATE folios
 SET count = count + 1
-WHERE id = ?
+WHERE type = ?
 `
 
-func (q *Queries) IncrementCount(ctx context.Context, id int64) error {
-	_, err := q.db.ExecContext(ctx, incrementCount, id)
+func (q *Queries) IncrementFolioCount(ctx context.Context, type_ string) error {
+	_, err := q.db.ExecContext(ctx, incrementFolioCount, type_)
 	return err
 }
