@@ -29,6 +29,10 @@ func main() {
 		Bind: []any{
 			app,
 			app.tasks.Products,
+			app.tasks.Address,
+			app.tasks.Client,
+			app.tasks.Folio,
+			app.tasks.Transaction,
 		},
 	})
 
